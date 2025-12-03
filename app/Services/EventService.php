@@ -2,68 +2,86 @@
 
 namespace App\Services;
 
-use App\Models\MonitorEvent;
-use Illuminate\Support\Collection;
+use App\Models\SysEvent;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class EventService
 {
-    /**
-     * Получить последние события
-     */
-    public function latest(int $limit = 20): Collection
+    public function getPaginated(array $filters, int $perPage = 50): LengthAwarePaginator
     {
-        return MonitorEvent::orderByDesc('created_at')
-            ->limit($limit)
-            ->get();
+        // force IDE to register scopeFilter()
+        SysEvent::filter([]);
+
+        return SysEvent::query()
+            ->with(['device.location'])
+            ->filter($filters)
+            ->orderByDesc('timestamp')
+            ->paginate($perPage)
+            ->appends($filters);
     }
 
-    /**
-     * Поиск событий по типу, устройству или описанию
-     */
-    public function search(?string $term, int $limit = 50): Collection
+    public function findOne(int $deviceId, string $timestamp): SysEvent
     {
-        if (!$term) {
-            return collect();
-        }
+        // force IDE to register scopeFilter()
+        SysEvent::filter([]);
 
-        $term = trim($term);
-
-        return MonitorEvent::query()
-            ->where('event_type', 'ILIKE', "%{$term}%")
-            ->orWhere('description', 'ILIKE', "%{$term}%")
-            ->orWhere('device_id', 'ILIKE', "%{$term}%")
-            ->orderByDesc('created_at')
-            ->limit($limit)
-            ->get();
+        return SysEvent::query()
+            ->with(['device.location'])
+            ->where('deviceId', $deviceId)
+            ->where('timestamp', $timestamp)
+            ->firstOrFail();
     }
 
-    /**
-     * Пагинация событий
-     */
-    public function paginate(int $perPage = 50)
+    public function exportCsv(array $filters): StreamedResponse
     {
-        return MonitorEvent::orderByDesc('created_at')->paginate($perPage);
-    }
+        $fileName = 'events_' . now()->format('Y-m-d_H-i-s') . '.csv';
 
-    /**
-     * Получить события конкретного устройства
-     */
-    public function forDevice(string $deviceId, int $limit = 50): Collection
-    {
-        return MonitorEvent::where('device_id', $deviceId)
-            ->orderByDesc('created_at')
-            ->limit($limit)
-            ->get();
-    }
+        $callback = function () use ($filters) {
+            $handle = fopen('php://output', 'w');
 
-    /**
-     * Получить статистику по типам событий
-     */
-    public function statsByType(): Collection
-    {
-        return MonitorEvent::selectRaw('event_type, count(*) as cnt')
-            ->groupBy('event_type')
-            ->orderByDesc('cnt')
-            ->get();
+            fputcsv($handle, [
+                'deviceId',
+                'deviceName',
+                'location',
+                'timestamp',
+                'eventCode',
+                'eventText',
+            ], ';');
+
+            // force IDE to register scopeFilter()
+            SysEvent::filter([]);
+
+            SysEvent::query()
+                ->with(['device.location'])
+                ->filter($filters)
+                ->orderByDesc('timestamp')
+                ->chunk(500, function ($events) use ($handle) {
+                    foreach ($events as $event) {
+
+                        // force IDE to register accessor
+                        $event->event_text;
+
+                        $device   = $event->device;
+                        $location = $device?->location;
+
+                        fputcsv($handle, [
+                            $event->deviceId,
+                            $device->name ?? '',
+                            $location->locName ?? $device->locDesc ?? '',
+                            optional($event->timestamp)->format('Y-m-d H:i:s'),
+                            $event->event,
+                            $event->event_text,
+                        ], ';');
+                    }
+                });
+
+            fclose($handle);
+        };
+
+        return new StreamedResponse($callback, 200, [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$fileName}\"",
+        ]);
     }
 }

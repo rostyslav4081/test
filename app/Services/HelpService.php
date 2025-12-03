@@ -12,7 +12,7 @@ class HelpService
 {
     public function getAll(): array
     {
-        return DB::connection('pgsql')
+        return DB::connection('pgsql_monitor')
             ->table('sys_notification')
             ->orderBy('id')
             ->get()
@@ -21,7 +21,7 @@ class HelpService
 
     public function find(int $id): ?object
     {
-        return DB::connection('pgsql')
+        return DB::connection('pgsql_monitor-')
             ->table('sys_notification')
             ->where('id', $id)
             ->first();

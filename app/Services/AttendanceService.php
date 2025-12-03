@@ -1,29 +1,31 @@
 <?php
+
 namespace App\Services;
 
-use Illuminate\Support\Facades\DB;
+use App\Models\WarehConnUser;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
-/**
- * Základní service pro modul Attendance.
- * Zatím obsahuje jen jednoduché helpery, které je možné rozšířit
- * podle detailní logiky původní aplikace.
- */
 class AttendanceService
 {
-    public function getAll(): array
+    /**
+     * Список підключень – останні зверху.
+     */
+    public function getAll(int $perPage = 50): LengthAwarePaginator
     {
-        return DB::connection('pgsql')
-            ->table('wareh_emploee')
-            ->orderBy('id')
-            ->get()
-            ->toArray();
+        return WarehConnUser::query()
+            ->orderByDesc('timestamp')
+            ->paginate($perPage);
     }
 
-    public function find(int $id): ?object
+    /**
+     * "ID" – це просто порядковий номер у відсортованому списку.
+     * 1 -> перший запис, 2 -> другий і т.д.
+     */
+    public function findByIndex(int $index): WarehConnUser
     {
-        return DB::connection('pgsql')
-            ->table('wareh_emploee')
-            ->where('id', $id)
-            ->first();
+        return WarehConnUser::query()
+            ->orderByDesc('timestamp')
+            ->skip($index - 1)
+            ->firstOrFail();
     }
 }

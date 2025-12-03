@@ -12,7 +12,7 @@ class UserSettingsService
 {
     public function getAll(): array
     {
-        return DB::connection('pgsql')
+        return DB::connection('pgsql_monitor')
             ->table('sys_users')
             ->orderBy('id')
             ->get()
@@ -21,7 +21,7 @@ class UserSettingsService
 
     public function find(int $id): ?object
     {
-        return DB::connection('pgsql')
+        return DB::connection('pgsql_monitor')
             ->table('sys_users')
             ->where('id', $id)
             ->first();

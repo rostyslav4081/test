@@ -12,7 +12,7 @@ class InfrastructureService
 {
     public function getAll(): array
     {
-        return DB::connection('pgsql')
+        return DB::connection('pgsql_monitor')
             ->table('sys_deviceUptime')
             ->orderBy('id')
             ->get()
@@ -21,7 +21,7 @@ class InfrastructureService
 
     public function find(int $id): ?object
     {
-        return DB::connection('pgsql')
+        return DB::connection('pgsql_monitor')
             ->table('sys_deviceUptime')
             ->where('id', $id)
             ->first();

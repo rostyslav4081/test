@@ -9,11 +9,17 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    /**
+     * Показати форму логіну
+     */
     public function showLoginForm()
     {
         return view('auth.login');
     }
 
+    /**
+     * Обробка логіну
+     */
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -25,6 +31,7 @@ class AuthController extends Controller
             $request->session()->regenerate();
             $request->session()->put('auth_expiration', now()->addDays(14));
 
+            // як у тебе було
             return redirect()->intended(route('overview.index'));
         }
 
@@ -33,6 +40,9 @@ class AuthController extends Controller
             ->onlyInput('email');
     }
 
+    /**
+     * Вихід
+     */
     public function logout(Request $request)
     {
         Auth::logout();
@@ -43,19 +53,22 @@ class AuthController extends Controller
         return redirect()->route('login');
     }
 
+    /**
+     * Реєстрація нового користувача (якщо хочеш її залишити)
+     */
     public function register(Request $request)
     {
         $data = $request->validate([
-            'email'    => ['required', 'email', 'unique:users,email'],
+            'email'    => ['required', 'email', 'unique:sys_users,email'],
             'password' => ['required', 'min:6', 'confirmed'],
         ]);
 
         $user = User::create([
-            'email'         => $data['email'],
-            'password'      => Hash::make($data['password']),
-            'role'          => 'user',
-            'location_id'   => null,
-            'location_name' => null,
+            'email'      => $data['email'],
+            'password'   => Hash::make($data['password']),
+            'role'       => 'user',
+            'locationId' => null,
+            'locName'    => null,
         ]);
 
         Auth::login($user);

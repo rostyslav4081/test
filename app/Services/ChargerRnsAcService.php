@@ -15,7 +15,7 @@ class ChargerRnsAcService
      */
     public function getInfo(int $deviceId): ?object
     {
-        return DB::connection('pgsql')
+        return DB::connection('pgsql_monitor')
             ->table('data_rnsAcInfo')
             ->where('deviceId', $deviceId)
             ->first();

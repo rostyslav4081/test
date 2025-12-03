@@ -12,7 +12,7 @@ class SettingsService
 {
     public function getAll(): array
     {
-        return DB::connection('pgsql')
+        return DB::connection('pgsql_monitor')
             ->table('sys_notificationSetting')
             ->orderBy('id')
             ->get()
@@ -21,7 +21,7 @@ class SettingsService
 
     public function find(int $id): ?object
     {
-        return DB::connection('pgsql')
+        return DB::connection('pgsql_monitor')
             ->table('sys_notificationSetting')
             ->where('id', $id)
             ->first();

@@ -10,7 +10,7 @@ class BatmonService
      */
     public function getDeviceInfo(int $deviceId): ?object
     {
-        return DB::connection('pgsql')
+        return DB::connection('pgsql_monitor')
             ->table('data_brmInfo')
             ->join('data_device', 'data_brmInfo.deviceId', '=', 'data_device.id')
             ->where('data_brmInfo.deviceId', $deviceId)
@@ -24,7 +24,7 @@ class BatmonService
      */
     public function getMonthlyElmHistory(int $deviceId, int $limit = 15): array
     {
-        $rows = DB::connection('pgsql')
+        $rows = DB::connection('pgsql_monitor')
             ->table('data_brmHistoryElmeter1h')
             ->selectRaw("DISTINCT ON (date_trunc('day', \"timestamp\")) \"timestamp\", date_trunc('day', \"timestamp\") as timestamp_month, \"Ah_chg\", \"Ah_dischg\"")
             ->where('deviceId', $deviceId)

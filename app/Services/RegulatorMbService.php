@@ -15,7 +15,7 @@ class RegulatorMbService
      */
     public function getInfo(int $deviceId): ?object
     {
-        return DB::connection('pgsql')
+        return DB::connection('pgsql_monitor')
             ->table('data_rrd_mb_Info')
             ->where('deviceId', $deviceId)
             ->first();
@@ -26,7 +26,7 @@ class RegulatorMbService
      */
     public function getHistory(int $deviceId, int $limit = 500): array
     {
-        return DB::connection('pgsql')
+        return DB::connection('pgsql_monitor')
             ->table('data_rrd_mb_History')
             ->where('deviceId', $deviceId)
             ->orderBy('timestamp', 'DESC')

@@ -12,7 +12,7 @@ class ProductionService
 {
     public function getAll(): array
     {
-        return DB::connection('pgsql')
+        return DB::connection('pgsql_monitor')
             ->table('wareh_manufHist')
             ->orderBy('id')
             ->get()
@@ -21,7 +21,7 @@ class ProductionService
 
     public function find(int $id): ?object
     {
-        return DB::connection('pgsql')
+        return DB::connection('pgsql_monitor')
             ->table('wareh_manufHist')
             ->where('id', $id)
             ->first();

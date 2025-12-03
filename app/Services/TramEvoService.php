@@ -15,7 +15,7 @@ class TramEvoService
      */
     public function getInfo(int $deviceId): ?object
     {
-        return DB::connection('pgsql')
+        return DB::connection('pgsql_monitor')
             ->table('data_evoPohInfo')
             ->where('deviceId', $deviceId)
             ->first();

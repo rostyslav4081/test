@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\AttendanceService;
+
 class AttendanceController extends Controller
 {
     public function __construct(
@@ -11,23 +12,23 @@ class AttendanceController extends Controller
         $this->middleware('auth');
     }
 
-public function index()
-{
-    $items = $this->service->getAll();
+    public function index()
+    {
+        $items = $this->service->getAll();
 
-    return view('attendance.index', [
-        'items' => $items,
-    ]);
-}
+        return view('attendance.index', [
+            'items' => $items,
+        ]);
+    }
 
-public function show(int $id)
-{
-    $item = $this->service->find($id);
-    abort_if(!$item, 404);
+    public function show(int $id)
+    {
+        // $id – це порядковий номер у списку (1,2,3...)
+        $item = $this->service->findByIndex($id);
 
-    return view('attendance.show', [
-        'item' => $item,
-    ]);
-}
-
+        return view('attendance.show', [
+            'id'   => $id,
+            'item' => $item,
+        ]);
+    }
 }

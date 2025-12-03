@@ -12,7 +12,7 @@ class SoftwareService
 {
     public function getAll(): array
     {
-        return DB::connection('pgsql')
+        return DB::connection('pgsql_monitor')
             ->table('sys_metrics')
             ->orderBy('id')
             ->get()
@@ -21,7 +21,7 @@ class SoftwareService
 
     public function find(int $id): ?object
     {
-        return DB::connection('pgsql')
+        return DB::connection('pgsql_monitor')
             ->table('sys_metrics')
             ->where('id', $id)
             ->first();

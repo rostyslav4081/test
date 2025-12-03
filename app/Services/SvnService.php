@@ -12,7 +12,7 @@ class SvnService
 {
     public function getAll(): array
     {
-        return DB::connection('pgsql')
+        return DB::connection('pgsql_monitor')
             ->table('sys_elbasPush')
             ->orderBy('id')
             ->get()
@@ -21,7 +21,7 @@ class SvnService
 
     public function find(int $id): ?object
     {
-        return DB::connection('pgsql')
+        return DB::connection('pgsql_monitor')
             ->table('sys_elbasPush')
             ->where('id', $id)
             ->first();

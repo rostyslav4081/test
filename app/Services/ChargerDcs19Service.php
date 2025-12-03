@@ -15,7 +15,7 @@ class ChargerDcs19Service
      */
     public function getInfo(int $deviceId): ?object
     {
-        return DB::connection('pgsql')
+        return DB::connection('pgsql_monitor')
             ->table('data_dcs19Info')
             ->where('deviceId', $deviceId)
             ->first();
@@ -26,7 +26,7 @@ class ChargerDcs19Service
      */
     public function getHistory(int $deviceId, int $limit = 500): array
     {
-        return DB::connection('pgsql')
+        return DB::connection('pgsql_monitor')
             ->table('data_dcs19History')
             ->where('deviceId', $deviceId)
             ->orderBy('timestamp', 'DESC')

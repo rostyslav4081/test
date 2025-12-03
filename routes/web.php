@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\EventController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\OverviewController;
@@ -28,7 +30,15 @@ Route::middleware(['auth'])->group(function () {
     // MAIN DASHBOARD (původnÃ­ OverviewPresenter)
     // --------------------------
     Route::get('/', [OverviewController::class, 'index'])->name('overview.index');
-
+    Route::get('/events', [EventController::class, 'index'])->name('events.index');
+    Route::get('/events/export', [EventController::class, 'export'])->name('events.export');
+    Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
+    Route::get('/attendance/{id}', [AttendanceController::class, 'show'])->name('attendance.show');
+    // Detail — SysEvent has no single ID → composite PK (deviceId + timestamp)
+    Route::get(
+        '/events/{deviceId}/{timestamp}',
+        [EventController::class, 'show']
+    )->name('events.show');
     // --------------------------
     // DEVICE DETAIL (včetně SNMP, DCS, EVENTS, ALARMS)
     // --------------------------

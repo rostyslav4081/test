@@ -15,7 +15,7 @@ class ChargerAcs20Service
      */
     public function getInfo(int $deviceId): ?object
     {
-        return DB::connection('pgsql')
+        return DB::connection('pgsql_monitor')
             ->table('data_acs20Info')
             ->where('deviceId', $deviceId)
             ->first();
@@ -26,7 +26,7 @@ class ChargerAcs20Service
      */
     public function getHistory(int $deviceId, int $limit = 500): array
     {
-        return DB::connection('pgsql')
+        return DB::connection('pgsql_monitor')
             ->table('data_acs20History')
             ->where('deviceId', $deviceId)
             ->orderBy('timestamp', 'DESC')
